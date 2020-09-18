@@ -1,0 +1,78 @@
+Student: Banu Miruna-Elena
+Group: 321CA
+
+Problem 1:
+    This problem requires finding the minimum number of towns to block so as
+the lords do not catch Robin Hood. It is obvious from the text of the problem
+that, to check if Robin's hiding place is exposed, a traversal from this spot
+to the others is needed (since the graph is undirected). 
+    It is known that, if a town at a certain poition, k, in the permutation
+is blocked, all the preceeding k - 1 nodes have to be blocked. Thus, the
+easiest way to store the positions and access them in O(1) is a
+std::unordered_map.
+    To limit the time complexity of the linear search in the permutation
+members, a binary search can easily be created. Thus, the binary search fit
+for this case cheched if the "middle" is a vailid node to stop the blocking
+of the towns or not:
+1. if "middle" is a valid node (the dfs starting from Robin Hood's hiding spot
+could not reach any of the lords), then the search would be done to the left
+of the permutation;
+2. otherwise, if "middle" is not a valid node, there are 2 other cases:
+    2.1 if "middle + 1" is valid, then middle is the last town that has to be
+    blocked to protect Robin.
+    2.2 otherwise, look to the right of the permutation.
+
+Given: N - towns, M - roads, K - lords' towns, we have:
+- Time complexity: O(log N * (N + M)) -> search the node in O(log N)
+                                      -> apply DFS each time
+- Space complexity: O(N * M + 3*N + K) => O(N * M)
+                                -> adjacency_matrix -> O(N * M)
+                                -> lords -> O(K)
+                                -> perms -> O(N)
+                                -> visited -> O(N)
+                                -> priority -> O(N)
+
+Problem 2:
+    This problem requires finding the shortest path between a source town
+and a destination town so that Robin Hood pays the smallest effort. Since
+it is mentioned that this effort can be negative as well, the first thought
+would be to use Bellman-Ford. This solution, however, is not efficient enough.
+    A clear hint for the solution of the problem is that it is specified that
+there is not a way to get back to A if Robin left from it, hence the graph is
+a directed acyclic graph.
+    The simplest way to find the shortest path in a DAG is to sort the nodes
+topologially and relax each adjacent edge in this order.
+    The implementation of the topological sort uses Kahn's algorithm (BFS). Then,
+each node is traversed in this order and the distance from source to all of the
+nodes is calculated.
+
+Given: N - towns, M - roads, we have:
+- Time complexity: O(N + M) => O(N + M) -> topsort in O(N + M)
+                                        -> traverse each node and relax
+                                        the edge
+- Space complexity: O(N * M + 2 * N) => O(N * M) -> adj matrix -> O(N * M)
+                                                 -> d -> O (N)
+                                                 -> inDegree -> O(N)
+
+Problem 3:
+    This problem requires finding the easiest way to reach Notthingam so that
+Robin Hood spends the least energy. Each road has a percent that will be lost
+from the previous energy if it is chosen. Since none of the possible remaining
+energies is negative, Dijkstra's algorithm is an obvious choice for the solution
+of this problem, the only difference from the original being the egde relaxation.
+    Moreover, since the greatest energy is required in the end, this entails
+the use of a max-heap instead of the standard min-heap from Dijkstra.
+    Thus, the solution to this problem is to apply the above-mentioned algorithm,
+having changed the edge relaxation so that the energy of the node is lower than
+the aux_energy = e[node] * (1 - cost_edge/100) for each neighbouring node.
+    For the road reconstruction, a parent vector has been used for each node,
+in the end only traversing this vector from the final node to the source node
+and then reversing it.
+
+Given: N - towns, M - roads, we have:
+- Time complexity: O(M * log N) -> Dijkstra's algorithm
+- Space complexity: O(M * N + 4 * N) -> O(M * N)-> adj matrix -> O(M * N)
+                                                -> energy vector -> O(N)
+                                                -> priority queue -> O(N)
+                                                -> parent vector -> O(N)
+                                                -> path vector -> O(N)
